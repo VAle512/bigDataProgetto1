@@ -1,7 +1,7 @@
 package it.uniroma3.sparx.bigDataProgetto1.mapReduce;
 
-
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.apache.hadoop.io.IntWritable;
@@ -24,18 +24,24 @@ public class Top5ProductsMapper extends Mapper<LongWritable, Text, Text, IntWrit
 		long time = Long.parseLong(fields[TIME]);
 		int score = Integer.parseInt(fields[SCORE]);
 
-		Calendar date = Calendar.getInstance();
-		date.setTimeInMillis(time*1000);
-		
-		String newKey = "";
-		newKey += date.get(Calendar.YEAR);
-		if(date.get(Calendar.MONTH) < 9)
-			newKey += "0";
-		newKey += (date.get(Calendar.MONTH) +1 );
-		newKey += " ";
-		newKey += productId;
+		String monthId = this.unixTimeConverter(time);
+		String newKey = monthId + " " + productId;
+//		String newKey = "";
+//		newKey += calendar.get(Calendar.YEAR);
+//		if(calendar.get(Calendar.MONTH) < 9)
+//			newKey += "0";
+//		newKey += (calendar.get(Calendar.MONTH) +1 );
+//		newKey += " ";
+//		newKey += productId;
 		
 		context.write(new Text(newKey), new IntWritable(score));
+	}
+	
+	private String unixTimeConverter(long time) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(time*1000);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		return sdf.format(calendar.getTime()) ;
 	}
 
 }
