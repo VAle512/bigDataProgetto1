@@ -3,9 +3,10 @@ package it.uniroma3.sparx.bigDataProgetto1.mapReduce;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.MultiValueMap;
@@ -19,7 +20,7 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 	private static final int PRODUCT_ID = 1;
 	private static final int TOP_PRODUCTS_PER_MONTH_NUMBER = 5;
 
-	private HashMap<String, MultiValueMap> map = new HashMap<String, MultiValueMap>();
+	private Map<String, MultiValueMap> map = new LinkedHashMap<String, MultiValueMap>();
 
 	@Override
 	public void reduce(Text key, Iterable<IntWritable> values, Context context) {
@@ -42,13 +43,12 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void cleanup(Context context) throws IOException, InterruptedException {
-		ArrayList<String> orderDateID = new ArrayList<>();
-		orderDateID.addAll(map.keySet());
-		Collections.sort(orderDateID);
-		for (String dateID : orderDateID) {
+		for (String dateID : map.keySet()) {
 			List<Float> scores = this.orderedScores(map.get(dateID).keySet());
 			String out = this.topProducts(scores, dateID);
-			context.write(new Text(dateID), new Text(out));
+			//date format yyyy-MM
+			String date = dateID.substring(0, 4) + "-" + dateID.substring(4);
+			context.write(new Text(date), new Text(out));
 		}
 	}
 
