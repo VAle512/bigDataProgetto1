@@ -31,7 +31,7 @@ public class Top5Products {
 		MultipleInputs.addInputPath(job, new Path(args[1]), TextInputFormat.class, Top5ProductsMapper.class);
 		MultipleInputs.addInputPath(job, new Path(args[2]), TextInputFormat.class, Top5ProductsMapper.class);
 		MultipleInputs.addInputPath(job, new Path(args[3]), TextInputFormat.class, Top5ProductsMapper.class);
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		FileOutputFormat.setOutputPath(job, new Path(args[4]));
 		job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(IntWritable.class);
 		job.setOutputKeyClass(Text.class);
