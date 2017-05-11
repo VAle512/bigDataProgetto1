@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -41,11 +43,9 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 	@Override
 	public void cleanup(Context context) throws IOException, InterruptedException {
 		for (String dateID : map.keySet()) {
-			ArrayList<Float> scores = new ArrayList<Float>();
-			scores.addAll(map.get(dateID).keySet());
-			scores.sort(Collections.reverseOrder());
-			String out = this.top5Products(scores, dateID);
-			context.write(new Text(dateID.substring(0, 4)), new Text(out));
+			List<Float> scores = this.orderedScores(map.get(dateID).keySet());
+			String out = this.topProducts(scores, dateID);
+			context.write(new Text(dateID), new Text(out));
 		}
 	}
 
@@ -59,30 +59,31 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 		return sum/tot;
 	}
 	
+	private List<Float> orderedScores(Set<Float> set) {
+		ArrayList<Float> scores = new ArrayList<Float>();
+		scores.addAll(set);
+		scores.sort(Collections.reverseOrder());
+		return scores;
+	}
+	
 	@SuppressWarnings("unchecked")
-	private String top5Products(List<Float> scores, String dateID){
+	private String topProducts(List<Float> scores, String dateID){
 		int topProdCounter = 0;
-		String out = dateID;
+		String out = "";
 		for (Float score : scores) {
-			HashSet<String> products = (HashSet<String>) map.get(dateID).getCollection(score);
+			Set<String> products = new HashSet<String>() ;
+			products.addAll(map.get(dateID).getCollection(score));
 			for (String p : products)	{
 				if(topProdCounter == TOP_PRODUCTS_PER_MONTH_NUMBER)
 					return out;
 				out += " ";
 				out += p;
 				out += " ";
-				out += score; //score ?
+				out += score;
 				topProdCounter++;
-
 			}
 		}
 		return out;
 	}
 	
-	
-	
-	
-	
-	
-
 }

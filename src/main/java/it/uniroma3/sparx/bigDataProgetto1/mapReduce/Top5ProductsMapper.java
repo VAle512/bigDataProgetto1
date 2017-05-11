@@ -20,7 +20,7 @@ public class Top5ProductsMapper extends Mapper<LongWritable, Text, Text, IntWrit
 
 		String[] fields = value.toString().split("\t");
 		
-		int productId = Integer.parseInt(fields[PRODUCT_ID]); 
+		String productId = fields[PRODUCT_ID]; 
 		long time = Long.parseLong(fields[TIME]);
 		int score = Integer.parseInt(fields[SCORE]);
 
