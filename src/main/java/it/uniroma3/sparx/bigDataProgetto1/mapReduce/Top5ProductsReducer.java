@@ -42,7 +42,10 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void cleanup(Context context) throws IOException, InterruptedException {
-		for (String dateID : map.keySet()) {
+		ArrayList<String> orderDateID = new ArrayList<>();
+		orderDateID.addAll(map.keySet());
+		Collections.sort(orderDateID);
+		for (String dateID : orderDateID) {
 			List<Float> scores = this.orderedScores(map.get(dateID).keySet());
 			String out = this.topProducts(scores, dateID);
 			context.write(new Text(dateID), new Text(out));
