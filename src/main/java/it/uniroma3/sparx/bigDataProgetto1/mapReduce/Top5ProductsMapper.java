@@ -26,13 +26,6 @@ public class Top5ProductsMapper extends Mapper<LongWritable, Text, Text, IntWrit
 
 		String monthId = this.unixTimeConverter(time);
 		String newKey = monthId + " " + productId;
-//		String newKey = "";
-//		newKey += calendar.get(Calendar.YEAR);
-//		if(calendar.get(Calendar.MONTH) < 9)
-//			newKey += "0";
-//		newKey += (calendar.get(Calendar.MONTH) +1 );
-//		newKey += " ";
-//		newKey += productId;
 		
 		context.write(new Text(newKey), new IntWritable(score));
 	}
@@ -40,7 +33,7 @@ public class Top5ProductsMapper extends Mapper<LongWritable, Text, Text, IntWrit
 	private String unixTimeConverter(long time) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(time*1000);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 		return sdf.format(calendar.getTime()) ;
 	}
 

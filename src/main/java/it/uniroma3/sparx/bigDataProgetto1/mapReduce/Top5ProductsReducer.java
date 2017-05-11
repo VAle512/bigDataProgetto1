@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -23,36 +25,27 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 		float averageScore = this.averageScore(values);
 
 		String[] fields = key.toString().split(" ");
-		String month_id = fields[MONTH_ID];
-		String product_id = fields[PRODUCT_ID];
+		String dateID = fields[MONTH_ID];
+		String productID = fields[PRODUCT_ID];
 
-		if (!map.containsKey(month_id)) {
+		if (!map.containsKey(dateID)) {
 			MultiValueMap mvMap = new MultiValueMap();
-			mvMap.put(averageScore, product_id);
-			map.put(month_id,mvMap);
+			mvMap.put(averageScore, productID);
+			map.put(dateID,mvMap);
 		}
 		else 
-			map.get(month_id).put(averageScore,product_id);
+			map.get(dateID).put(averageScore,productID);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void cleanup(Context context) throws IOException, InterruptedException {
-		for (String monthId : map.keySet()) {
-			int topProdCounter = 0;
-			String out = monthId;
-			ArrayList<Float> list = new ArrayList<Float>();
-			list.addAll(map.get(monthId).keySet());
-			list.sort(Collections.reverseOrder());
-			for (Float el : list) {
-				if(topProdCounter == TOP_PRODUCTS_PER_MONTH_NUMBER)
-					break;
-				out += map.get(monthId).get(el); //Prodotto ?
-				out += " ";
-				out += el; //score ?
-				topProdCounter++;
-			}
-			context.write(new Text(monthId.substring(0, 4)), new Text(out));
+		for (String dateID : map.keySet()) {
+			ArrayList<Float> scores = new ArrayList<Float>();
+			scores.addAll(map.get(dateID).keySet());
+			scores.sort(Collections.reverseOrder());
+			String out = this.top5Products(scores, dateID);
+			context.write(new Text(dateID.substring(0, 4)), new Text(out));
 		}
 	}
 
@@ -65,5 +58,31 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 		}
 		return sum/tot;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private String top5Products(List<Float> scores, String dateID){
+		int topProdCounter = 0;
+		String out = dateID;
+		for (Float score : scores) {
+			HashSet<String> products = (HashSet<String>) map.get(dateID).getCollection(score);
+			for (String p : products)	{
+				if(topProdCounter == TOP_PRODUCTS_PER_MONTH_NUMBER)
+					return out;
+				out += " ";
+				out += p;
+				out += " ";
+				out += score; //score ?
+				topProdCounter++;
+
+			}
+		}
+		return out;
+	}
+	
+	
+	
+	
+	
+	
 
 }
