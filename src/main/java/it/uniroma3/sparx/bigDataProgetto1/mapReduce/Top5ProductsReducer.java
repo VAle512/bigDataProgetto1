@@ -31,20 +31,20 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 		String dateID = fields[MONTH_ID];
 		String productID = fields[PRODUCT_ID];
 
-		if (!map.containsKey(dateID)) {
+		if (!this.map.containsKey(dateID)) {
 			MultiValueMap mvMap = new MultiValueMap();
 			mvMap.put(averageScore, productID);
-			map.put(dateID,mvMap);
+			this.map.put(dateID,mvMap);
 		}
 		else 
-			map.get(dateID).put(averageScore,productID);
+			this.map.get(dateID).put(averageScore,productID);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void cleanup(Context context) throws IOException, InterruptedException {
-		for (String dateID : map.keySet()) {
-			List<Float> scores = this.orderedScores(map.get(dateID).keySet());
+		for (String dateID : this.map.keySet()) {
+			List<Float> scores = this.orderedScores(this.map.get(dateID).keySet());
 			String out = this.topProducts(scores, dateID);
 			//date format yyyy-MM
 			String date = dateID.substring(0, 4) + "-" + dateID.substring(4);
@@ -75,7 +75,7 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 		String out = "";
 		for (Float score : scores) {
 			Set<String> products = new HashSet<String>() ;
-			products.addAll(map.get(dateID).getCollection(score));
+			products.addAll(this.map.get(dateID).getCollection(score));
 			for (String p : products)	{
 				if(topProdCounter == TOP_PRODUCTS_PER_MONTH_NUMBER)
 					return out;
