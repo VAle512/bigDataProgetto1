@@ -9,15 +9,15 @@ OVERWRITE INTO TABLE top5products;
 DROP VIEW IF EXISTS ordered_products;
 
 CREATE VIEW ordered_products AS
-SELECT ord_prod.mounthYear, ord_prod.productId, avg(ord_prod.score) AS average
+SELECT ord_prod.monthYear, ord_prod.productId, avg(ord_prod.score) AS average
 FROM(
-SELECT from_unixtime(time, 'yyyyMM') AS mounthYear, productId, score
+SELECT from_unixtime(time, 'yyyyMM') AS monthYear, productId, score
 FROM top5products) ord_prod
-GROUP BY ord_prod.productId, ord_prod.mounthYear
-ORDER BY ord_prod.mounthYear, ord_prod.productId;
+GROUP BY ord_prod.productId, ord_prod.monthYear
+ORDER BY ord_prod.monthYear, ord_prod.productId;
 
-SELECT topProd.mounthYear, topProd.productId, topProd.average
+SELECT topProd.monthYear, topProd.productId, topProd.average
 FROM(
-SELECT mounthYear, productId, average, row_number() over(PARTITION BY mounthYear ORDER BY average DESC) AS rank
+SELECT monthYear, productId, average, row_number() over(PARTITION BY monthYear ORDER BY average DESC) AS rank
 FROM ordered_products) topProd
 WHERE topProd.rank <= 5;
