@@ -1,9 +1,9 @@
-package it.uniroma3.sparx.bigDataProgetto1.mapReduce;
+package it.uniroma3.sparx.bigDataProgetto1.mapReduce.topProductsPerMonth;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,13 +14,13 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> {
+public class TopProductsPerMonthReducer extends Reducer<Text, IntWritable, Text, Text> {
 
 	private static final int MONTH_ID = 0;
 	private static final int PRODUCT_ID = 1;
 	private static final int TOP_PRODUCTS_PER_MONTH_NUMBER = 5;
 
-	private Map<String, MultiValueMap> map = new LinkedHashMap<String, MultiValueMap>();
+	private Map<String, MultiValueMap> score2products = new LinkedHashMap<String, MultiValueMap>();
 
 	@Override
 	public void reduce(Text key, Iterable<IntWritable> values, Context context) {
@@ -31,20 +31,20 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 		String dateID = fields[MONTH_ID];
 		String productID = fields[PRODUCT_ID];
 
-		if (!map.containsKey(dateID)) {
+		if (!this.score2products.containsKey(dateID)) {
 			MultiValueMap mvMap = new MultiValueMap();
 			mvMap.put(averageScore, productID);
-			map.put(dateID,mvMap);
+			this.score2products.put(dateID,mvMap);
 		}
 		else 
-			map.get(dateID).put(averageScore,productID);
+			this.score2products.get(dateID).put(averageScore,productID);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void cleanup(Context context) throws IOException, InterruptedException {
-		for (String dateID : map.keySet()) {
-			List<Float> scores = this.orderedScores(map.get(dateID).keySet());
+		for (String dateID : this.score2products.keySet()) {
+			List<Float> scores = this.orderedScores(this.score2products.get(dateID).keySet());
 			String out = this.topProducts(scores, dateID);
 			//date format yyyy-MM
 			String date = dateID.substring(0, 4) + "-" + dateID.substring(4);
@@ -61,26 +61,23 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 		}
 		return sum/tot;
 	}
-	
+
 	private List<Float> orderedScores(Set<Float> set) {
 		ArrayList<Float> scores = new ArrayList<Float>();
 		scores.addAll(set);
 		scores.sort(Collections.reverseOrder());
 		return scores;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private String topProducts(List<Float> scores, String dateID){
 		int topProdCounter = 0;
 		String out = "";
 		for (Float score : scores) {
-			Set<String> products = new HashSet<String>() ;
-			products.addAll(map.get(dateID).getCollection(score));
-			for (String p : products)	{
-				if(topProdCounter == TOP_PRODUCTS_PER_MONTH_NUMBER)
-					return out;
+			Iterator<String> it = this.score2products.get(dateID).getCollection(score).iterator();
+			while(it.hasNext() && topProdCounter < TOP_PRODUCTS_PER_MONTH_NUMBER)	{
 				out += " ";
-				out += p;
+				out += it.next();
 				out += " ";
 				out += score;
 				topProdCounter++;
@@ -88,5 +85,5 @@ public class Top5ProductsReducer extends Reducer<Text, IntWritable, Text, Text> 
 		}
 		return out;
 	}
-	
+
 }

@@ -1,15 +1,14 @@
-package it.uniroma3.sparx.bigDataProgetto1.mapReduce;
+package it.uniroma3.sparx.bigDataProgetto1.mapReduce.topProductsPerMonth;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class Top5ProductsMapper extends Mapper<LongWritable, Text, Text, IntWritable>	{
+import it.uniroma3.sparx.bigDataProgetto1.util.TimeConverter;
+
+public class TopProductsPerMonthMapper extends Mapper<LongWritable, Text, Text, IntWritable>	{
 
 	private static final int PRODUCT_ID = 1;
 	private static final int SCORE = 6;
@@ -24,17 +23,10 @@ public class Top5ProductsMapper extends Mapper<LongWritable, Text, Text, IntWrit
 		long time = Long.parseLong(fields[TIME]);
 		int score = Integer.parseInt(fields[SCORE]);
 
-		String monthId = this.unixTimeConverter(time);
+		String monthId = TimeConverter.unix2String(time);
 		String newKey = monthId + " " + productId;
 		
 		context.write(new Text(newKey), new IntWritable(score));
-	}
-	
-	private String unixTimeConverter(long time) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(time*1000);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		return sdf.format(calendar.getTime()) ;
 	}
 
 }
