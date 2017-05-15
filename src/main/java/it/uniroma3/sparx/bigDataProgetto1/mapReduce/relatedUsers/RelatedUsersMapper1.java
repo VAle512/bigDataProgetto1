@@ -5,7 +5,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class RelatedUsersMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class RelatedUsersMapper1 extends Mapper<LongWritable, Text, Text, Text> {
 
 	private static final int PRODUCT_ID = 1;
 	private static final int USER_ID = 2;
