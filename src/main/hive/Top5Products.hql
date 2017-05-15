@@ -3,19 +3,21 @@ CREATE TABLE IF NOT EXISTS top5products
 helpfulnessDenominator INT, score INT, time BIGINT, summary STRING, text STRING)
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
 
-LOAD DATA LOCAL INPATH '*****FILE CSV*****' 
+LOAD DATA LOCAL INPATH '/home/amazon/'
 OVERWRITE INTO TABLE top5products;
 
-CREATE VIEW ordered_products AS 
-SELECT ord_prod.date, ord_prod.productId, avg(ord_prod.score) AS average 
-FROM(
-SELECT from_unixtime(time, 'yyyyMM') AS date, productId, score 
-FROM top5products) ord_prod 
-GROUP BY ord_prod.productId, ord_prod.date
-ORDER BY ord_prod.date, ord_prod.productId;
+DROP VIEW IF EXISTS ordered_products;
 
-SELECT topProd.ym, topProd.productId, topProd.average 
+CREATE VIEW ordered_products AS
+SELECT ord_prod.mounthYear, ord_prod.productId, avg(ord_prod.score) AS average
 FROM(
-SELECT date, productId, average, row_number() over(PARTITION BY date ORDER BY average DESC) AS rank 
-FROM ordered_products) topProd 
+SELECT from_unixtime(time, 'yyyyMM') AS mounthYear, productId, score
+FROM top5products) ord_prod
+GROUP BY ord_prod.productId, ord_prod.mounthYear
+ORDER BY ord_prod.mounthYear, ord_prod.productId;
+
+SELECT topProd.mounthYear, topProd.productId, topProd.average
+FROM(
+SELECT mounthYear, productId, average, row_number() over(PARTITION BY mounthYear ORDER BY average DESC) AS rank
+FROM ordered_products) topProd
 WHERE topProd.rank <= 5;
