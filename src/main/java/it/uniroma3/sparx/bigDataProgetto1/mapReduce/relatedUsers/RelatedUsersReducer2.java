@@ -14,7 +14,7 @@ public class RelatedUsersReducer2 extends Reducer<Text, Text, Text, Text>  {
 		String out = "";
 		for(Text value : values) {
 			count++;
-			out +=  value.toString();
+			out +=  " " + value.toString();
 		}
 		if(count >= MIUMIN_RELATED_PRODUCTS)
 			context.write(key, new Text(out));

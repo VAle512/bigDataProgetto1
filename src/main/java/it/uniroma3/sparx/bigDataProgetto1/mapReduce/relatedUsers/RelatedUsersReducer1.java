@@ -1,8 +1,6 @@
 package it.uniroma3.sparx.bigDataProgetto1.mapReduce.relatedUsers;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.collections.map.MultiValueMap;
@@ -21,7 +19,7 @@ public class RelatedUsersReducer1 extends Reducer<Text, Text, Text, Text> {
 		for(int i=0;i<users.size();i++)
 			for(int j=i+1;j<users.size();j++) {
 				String couple = users.get(i) + "\t" + users.get(j);
-				context.write(new Text(couple), key);
+				context.write(null ,new Text(couple + "\t" + key.toString()));
 			}	
 	}
 

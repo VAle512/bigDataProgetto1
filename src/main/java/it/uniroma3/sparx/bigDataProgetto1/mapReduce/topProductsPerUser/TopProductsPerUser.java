@@ -27,10 +27,7 @@ public class TopProductsPerUser {
 		job.setMapperClass(TopProductsPerUserMapper.class);
 		job.setReducerClass(TopProductsPerUserReducer.class);
 		MultipleInputs.addInputPath(job, new Path(args[0]), TextInputFormat.class, TopProductsPerUserMapper.class);
-		MultipleInputs.addInputPath(job, new Path(args[1]), TextInputFormat.class, TopProductsPerUserMapper.class);
-		MultipleInputs.addInputPath(job, new Path(args[2]), TextInputFormat.class, TopProductsPerUserMapper.class);
-		MultipleInputs.addInputPath(job, new Path(args[3]), TextInputFormat.class, TopProductsPerUserMapper.class);
-		FileOutputFormat.setOutputPath(job, new Path(args[4]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(Text.class);
 		job.setOutputKeyClass(Text.class);
