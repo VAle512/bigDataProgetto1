@@ -23,10 +23,10 @@ public class TopProductsPerMonth implements Serializable {
 	private static final int TIME = 7;
 	
 	public static void main(String[] args) {
-		//long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		new TopProductsPerMonth().run(args[0], args[1]);;
-		//long runTime = System.currentTimeMillis() - start;
-		//System.out.println(runtime/1000);
+		long elapsed = System.currentTimeMillis() - start;
+		System.out.println("TEMPO TRASCORSO = "+elapsed/10000+" secondi.");
 	}
 
 	private void run(String inputPath, String outputPath) {

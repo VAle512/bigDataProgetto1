@@ -34,7 +34,10 @@ public class TopProductsPerUser {
 		job.setOutputValueClass(Text.class);
 
 		try {
+			long start = System.currentTimeMillis();
 			job.waitForCompletion(true);
+			long elapsed = System.currentTimeMillis() - start;
+			System.out.println("TEMPO TRASCORSO = "+elapsed/10000+" secondi.");
 		} catch (ClassNotFoundException | IOException | InterruptedException e) {
 			System.out.println("[ERR] Error while executing Map Reduce");
 			e.printStackTrace();
