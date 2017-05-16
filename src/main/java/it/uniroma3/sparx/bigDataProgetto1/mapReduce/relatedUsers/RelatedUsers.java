@@ -56,7 +56,7 @@ public class RelatedUsers {
 			job1.waitForCompletion(true);
 			job2.waitForCompletion(true);
 			long elapsed = System.currentTimeMillis() - start;
-			System.out.println("TEMPO TRASCORSO = "+elapsed/10000+" secondi.");
+			System.out.println("TEMPO TRASCORSO = "+elapsed/1000.0+" secondi.");
 		} catch (ClassNotFoundException | IOException | InterruptedException e) {
 			System.out.println("[ERR] Error while executing Map Reduce");
 			e.printStackTrace();

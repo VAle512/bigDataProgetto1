@@ -23,7 +23,7 @@ public class RelatedUsers implements Serializable{
 		long start = System.currentTimeMillis();
 		new RelatedUsers().run(args[0], args[1]);;
 		long elapsed = System.currentTimeMillis() - start;
-		System.out.println("TEMPO TRASCORSO = "+elapsed/10000+" secondi.");
+		System.out.println("TEMPO TRASCORSO = "+elapsed/1000.0+" secondi.");
 	}
 
 	private void run(String inputPath, String outputPath) {
