@@ -59,9 +59,9 @@ public class TopProductsPerUser implements Serializable {
 		return new Tuple2<>(row._1,out);
 	}
 	
-	private Map<String, Integer> mapOrderer(Map<String,Integer> map) {
+	private Map<String, Integer> mapOrderer(Map<String,Integer> unorderedMap) {
 		Map<String, Integer> orderedMap = new LinkedHashMap<>(); 
-		orderedMap.entrySet()
+		unorderedMap.entrySet()
 		.parallelStream()
 		.sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
 		.forEachOrdered(e -> orderedMap.put(e.getKey(), e.getValue()));
