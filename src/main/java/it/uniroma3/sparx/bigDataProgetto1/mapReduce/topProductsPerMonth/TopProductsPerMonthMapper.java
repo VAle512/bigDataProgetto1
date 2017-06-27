@@ -24,7 +24,7 @@ public class TopProductsPerMonthMapper extends Mapper<LongWritable, Text, Text, 
 		int score = Integer.parseInt(fields[SCORE]);
 
 		String monthId = TimeConverter.unix2String(time);
-		String newKey = monthId + " " + productId;
+		String newKey = monthId + "\t" + productId;
 		
 		context.write(new Text(newKey), new IntWritable(score));
 	}

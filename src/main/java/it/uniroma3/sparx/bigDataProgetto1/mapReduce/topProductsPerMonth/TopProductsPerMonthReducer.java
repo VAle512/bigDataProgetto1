@@ -27,7 +27,7 @@ public class TopProductsPerMonthReducer extends Reducer<Text, IntWritable, Text,
 
 		float averageScore = this.averageScore(values);
 
-		String[] fields = key.toString().split(" ");
+		String[] fields = key.toString().split("\t");
 		String dateID = fields[MONTH_ID];
 		String productID = fields[PRODUCT_ID];
 
@@ -46,7 +46,7 @@ public class TopProductsPerMonthReducer extends Reducer<Text, IntWritable, Text,
 		for (String dateID : this.score2products.keySet()) {
 			List<Float> scores = this.orderedScores(this.score2products.get(dateID).keySet());
 			String out = this.topProducts(scores, dateID);
-			//date format yyyy-MM
+			//new date format yyyy-MM
 			String date = dateID.substring(0, 4) + "-" + dateID.substring(4);
 			context.write(new Text(date), new Text(out));
 		}

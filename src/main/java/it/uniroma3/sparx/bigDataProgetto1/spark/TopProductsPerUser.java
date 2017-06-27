@@ -31,7 +31,7 @@ public class TopProductsPerUser implements Serializable {
 
 		SparkConf conf = new SparkConf().setAppName(this.getClass().getSimpleName());
 		JavaSparkContext jsc = new JavaSparkContext(conf);
-		JavaRDD<String> input = jsc.textFile(inputPath, 1);
+		JavaRDD<String> input = jsc.textFile(inputPath+"*.csv", 1);
 
 		input.mapToPair(row -> this.splitRow(row))
 		.groupByKey()
@@ -59,9 +59,9 @@ public class TopProductsPerUser implements Serializable {
 		return new Tuple2<>(row._1,out);
 	}
 	
-	private Map<String, Integer> mapOrderer(Map<String,Integer> map) {
+	private Map<String, Integer> mapOrderer(Map<String,Integer> unorderedMap) {
 		Map<String, Integer> orderedMap = new LinkedHashMap<>(); 
-		orderedMap.entrySet()
+		unorderedMap.entrySet()
 		.parallelStream()
 		.sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
 		.forEachOrdered(e -> orderedMap.put(e.getKey(), e.getValue()));

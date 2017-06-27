@@ -31,10 +31,9 @@ public class TopProductsPerMonth implements Serializable {
 
 	private void run(String inputPath, String outputPath) {
 		
-		
 		SparkConf conf = new SparkConf().setAppName(this.getClass().getSimpleName());
 		JavaSparkContext jsc = new JavaSparkContext(conf);
-		JavaRDD<String> input = jsc.textFile(inputPath, 1);
+		JavaRDD<String> input = jsc.textFile(inputPath+"*.csv", 1);
 		
 		input.mapToPair(row -> this.splitRow(row))
 		.reduceByKey((a,b) ->  new Tuple2<Integer, Float>(a._1 + b._1, a._2 + b._2))
