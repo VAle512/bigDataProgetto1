@@ -31,7 +31,7 @@ public class TopProductsPerUser implements Serializable {
 
 		SparkConf conf = new SparkConf().setAppName(this.getClass().getSimpleName());
 		JavaSparkContext jsc = new JavaSparkContext(conf);
-		JavaRDD<String> input = jsc.textFile(inputPath+"*.csv", 1);
+		JavaRDD<String> input = jsc.textFile(inputPath, 1);
 
 		input.mapToPair(row -> this.splitRow(row))
 		.groupByKey()

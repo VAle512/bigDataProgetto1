@@ -1,12 +1,12 @@
 package it.uniroma3.sparx.bigDataProgetto1.spark;
 
 import java.io.Serializable;
-import java.util.Iterator;
-
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+
+import com.google.common.collect.Iterators;
 
 import scala.Tuple2;
 
@@ -39,7 +39,7 @@ public class RelatedUsers implements Serializable{
 		.filter(row-> row._2._1.compareTo(row._2._2) < 0 )
 		.mapToPair(row -> new Tuple2<>(row._2._1 + "\t" +row._2._2,row._1))
 		.groupByKey()
-		.filter(row -> this.areEnoughProducts(row._2))
+		.filter(row -> Iterators.size(row._2.iterator()) >= MINIMUM_RELATED_PRODUCTS)
 		.sortByKey()
 		.saveAsTextFile(outputPath);
 
@@ -55,14 +55,4 @@ public class RelatedUsers implements Serializable{
 		return new Tuple2<>(productID,userID);	
 	}
 	
-	private boolean areEnoughProducts(Iterable<String> products) {
-		Iterator<String> it = products.iterator();
-		int count = 0;
-		while (it.hasNext()) {
-			count++;
-			if(count == MINIMUM_RELATED_PRODUCTS)
-				return true;
-		}
-		return false;
-	}
 }

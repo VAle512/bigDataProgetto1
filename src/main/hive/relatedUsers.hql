@@ -16,7 +16,7 @@ JOIN relatedUsers relatedUsersTable2 on relatedUsersTable1.productId = relatedUs
 WHERE relatedUsersTable1.score > 3 and relatedUsersTable2.score > 3 and relatedUsersTable1.userId > relatedUsersTable2.userId
 GROUP BY relatedUsersTable1.userId,relatedUsersTable2.userId;
 
-SELECT up.firstUser, up.secondUser, up.numCommonProducts ,up.commonProductsSet
+SELECT up.secondUser, up.firstUser, up.numCommonProducts ,up.commonProductsSet
 FROM userPairs up
 WHERE up.numCommonProducts > 2
-ORDER BY up.firstUser,up.secondUser;
+ORDER BY up.secondUser,up.firstUser;
